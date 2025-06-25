@@ -14,12 +14,20 @@
 ### Docker로 실행 (권장)
 
 ```bash
-# Docker Compose로 빌드 및 실행
+# 빠른 재빌드 및 실행
+./rebuild.sh
+
+# 또는 수동으로
 docker-compose up --build
 
 # 브라우저에서 접속
-# http://localhost:8080
+# http://localhost:8081
 ```
+
+### 빠른 명령어
+- `./rebuild.sh` - Docker 재빌드 및 실행
+- `docker-compose logs -f` - 로그 확인
+- `docker-compose down` - 컨테이너 중지
 
 ### 로컬 개발
 
