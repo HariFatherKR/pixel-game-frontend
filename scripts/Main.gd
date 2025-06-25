@@ -4,6 +4,7 @@ extends Node2D
 const MainMenuScene = preload("res://scenes/screens/MainMenu.tscn")
 const CardListScene = preload("res://scenes/screens/CardList.tscn")
 const CardDetailScene = preload("res://scenes/screens/CardDetail.tscn")
+const LoginScreenScene = preload("res://scenes/screens/LoginScreen.tscn")
 
 # Current scene management
 var current_scene: Node
@@ -29,6 +30,8 @@ func _load_main_menu():
 		current_scene.cards_pressed.connect(_on_cards_pressed)
 	if current_scene.has_signal("settings_pressed"):
 		current_scene.settings_pressed.connect(_on_settings_pressed)
+	if current_scene.has_signal("login_pressed"):
+		current_scene.login_pressed.connect(_on_login_pressed)
 	if current_scene.has_signal("exit_pressed"):
 		current_scene.exit_pressed.connect(_on_exit_pressed)
 	
@@ -92,3 +95,32 @@ func _load_card_detail(card_id: int):
 func _on_card_detail_back_pressed():
 	print("Returning to card list...")
 	_load_card_list()
+
+func _on_login_pressed():
+	print("Opening login screen...")
+	_load_login_screen()
+
+func _load_login_screen():
+	if current_scene:
+		current_scene.queue_free()
+	
+	current_scene = LoginScreenScene.instantiate()
+	$UI.add_child(current_scene)
+	
+	# Connect signals
+	if current_scene.has_signal("back_pressed"):
+		current_scene.back_pressed.connect(_on_login_back_pressed)
+	if current_scene.has_signal("login_success"):
+		current_scene.login_success.connect(_on_login_success)
+	
+	print("Login screen loaded")
+
+func _on_login_back_pressed():
+	print("Returning to main menu from login...")
+	_load_main_menu()
+
+func _on_login_success(username: String, token: String):
+	print("Login successful for user: ", username)
+	# TODO: Store user session data
+	# For now, just return to main menu
+	_load_main_menu()
