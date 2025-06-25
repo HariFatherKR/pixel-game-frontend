@@ -14,7 +14,7 @@ func _ready():
 
 # System endpoints
 func get_health():
-	_make_request("/health", HTTPClient.METHOD_GET, null, false)
+	_make_request("/api/v1/health", HTTPClient.METHOD_GET, null, false)
 
 # Auth endpoints
 func register(username: String, email: String, password: String, platform: String = "web"):
@@ -24,11 +24,11 @@ func register(username: String, email: String, password: String, platform: Strin
 		"password": password,
 		"platform": platform
 	}
-	_make_request("/auth/register", HTTPClient.METHOD_POST, body, false)
+	_make_request("/api/v1/auth/register", HTTPClient.METHOD_POST, body, false)
 
 func login(username: String, password: String):
 	var body = {"username": username, "password": password}
-	_make_request("/auth/login", HTTPClient.METHOD_POST, body, false)
+	_make_request("/api/v1/auth/login", HTTPClient.METHOD_POST, body, false)
 
 # Card endpoints
 func get_cards(type: String = "", rarity: String = "", page: int = 1, limit: int = 20):
@@ -41,14 +41,14 @@ func get_cards(type: String = "", rarity: String = "", page: int = 1, limit: int
 	query_params.append("limit=" + str(limit))
 	
 	var query_string = "?" + "&".join(query_params) if query_params.size() > 0 else ""
-	_make_request("/cards" + query_string, HTTPClient.METHOD_GET)
+	_make_request("/api/v1/cards" + query_string, HTTPClient.METHOD_GET)
 
 func get_my_collection():
-	_make_request("/cards/my-collection", HTTPClient.METHOD_GET)
+	_make_request("/api/v1/cards/my-collection", HTTPClient.METHOD_GET)
 
 # Deck endpoints
 func get_decks():
-	_make_request("/cards/decks", HTTPClient.METHOD_GET)
+	_make_request("/api/v1/cards/decks", HTTPClient.METHOD_GET)
 
 func create_deck(name: String, card_ids: Array):
 	# Ensure we have 10-30 cards
@@ -57,20 +57,20 @@ func create_deck(name: String, card_ids: Array):
 		return
 		
 	var body = {"name": name, "card_ids": card_ids}
-	_make_request("/cards/decks", HTTPClient.METHOD_POST, body)
+	_make_request("/api/v1/cards/decks", HTTPClient.METHOD_POST, body)
 
 # Game session endpoints
 func start_game(game_mode: String = "STORY", deck_id: int = -1):
 	var body = {"game_mode": game_mode}
 	if deck_id >= 0:
 		body["deck_id"] = deck_id
-	_make_request("/games/start", HTTPClient.METHOD_POST, body)
+	_make_request("/api/v1/games/start", HTTPClient.METHOD_POST, body)
 
 func get_current_game():
-	_make_request("/games/current", HTTPClient.METHOD_GET)
+	_make_request("/api/v1/games/current", HTTPClient.METHOD_GET)
 
 func get_game(game_id: int):
-	_make_request("/games/" + str(game_id), HTTPClient.METHOD_GET)
+	_make_request("/api/v1/games/" + str(game_id), HTTPClient.METHOD_GET)
 
 func play_action(game_id: int, action_type: String, card_id: int = -1, target_id: int = -1, action_data = null):
 	var body = {"action_type": action_type}
@@ -80,16 +80,16 @@ func play_action(game_id: int, action_type: String, card_id: int = -1, target_id
 		body["target_id"] = target_id
 	if action_data != null:
 		body["action_data"] = action_data
-	_make_request("/games/" + str(game_id) + "/actions", HTTPClient.METHOD_POST, body)
+	_make_request("/api/v1/games/" + str(game_id) + "/actions", HTTPClient.METHOD_POST, body)
 
 func end_turn(game_id: int):
-	_make_request("/games/" + str(game_id) + "/end-turn", HTTPClient.METHOD_POST, {})
+	_make_request("/api/v1/games/" + str(game_id) + "/end-turn", HTTPClient.METHOD_POST, {})
 
 func surrender_game(game_id: int):
-	_make_request("/games/" + str(game_id) + "/surrender", HTTPClient.METHOD_POST, {})
+	_make_request("/api/v1/games/" + str(game_id) + "/surrender", HTTPClient.METHOD_POST, {})
 
 func get_game_stats():
-	_make_request("/games/stats", HTTPClient.METHOD_GET)
+	_make_request("/api/v1/games/stats", HTTPClient.METHOD_GET)
 
 # Helper function to make HTTP requests
 func _make_request(endpoint: String, method: int, body = null, requires_auth: bool = true):
