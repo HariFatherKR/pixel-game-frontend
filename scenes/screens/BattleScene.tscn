@@ -1,0 +1,284 @@
+[gd_scene load_steps=3 format=3 uid="uid://battlescene123"]
+
+[ext_resource type="Script" path="res://scripts/screens/BattleScene.gd" id="1_battle"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.1, 0.1, 0.15, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="BattleScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_battle")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.1, 1.0)
+
+[node name="TopPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_right = -20.0
+theme_override_constants/separation = 20
+
+[node name="FloorLabel" type="Label" parent="TopPanel/HBoxContainer"]
+layout_mode = 2
+text = "Floor: 1"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+
+[node name="TurnLabel" type="Label" parent="TopPanel/HBoxContainer"]
+layout_mode = 2
+text = "Turn: 1"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+
+[node name="Spacer" type="Control" parent="TopPanel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnergyLabel" type="Label" parent="TopPanel/HBoxContainer"]
+layout_mode = 2
+text = "Energy: 3/3"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0, 1, 0, 1)
+
+[node name="EndTurnButton" type="Button" parent="TopPanel/HBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 0)
+text = "END TURN"
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+
+[node name="BattleField" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 70.0
+margin_bottom = -200.0
+
+[node name="EnemyArea" type="VBoxContainer" parent="BattleField"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 50.0
+offset_bottom = 300.0
+
+[node name="EnemyPanel" type="Panel" parent="BattleField/EnemyArea"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 200)
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BattleField/EnemyArea/EnemyPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 10.0
+margin_right = -10.0
+margin_bottom = -10.0
+
+[node name="EnemyNameLabel" type="Label" parent="BattleField/EnemyArea/EnemyPanel/VBoxContainer"]
+layout_mode = 2
+text = "Enemy"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+horizontal_alignment = 1
+
+[node name="EnemyHealthBar" type="ProgressBar" parent="BattleField/EnemyArea/EnemyPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 20)
+value = 100.0
+show_percentage = false
+
+[node name="EnemyHealthLabel" type="Label" parent="BattleField/EnemyArea/EnemyPanel/VBoxContainer"]
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 1
+
+[node name="EnemyShieldLabel" type="Label" parent="BattleField/EnemyArea/EnemyPanel/VBoxContainer"]
+layout_mode = 2
+text = "Shield: 0"
+theme_override_colors/font_color = Color(0.5, 0.5, 1, 1)
+horizontal_alignment = 1
+
+[node name="IntentLabel" type="Label" parent="BattleField/EnemyArea/EnemyPanel/VBoxContainer"]
+layout_mode = 2
+text = "Intent: Attack 10"
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+horizontal_alignment = 1
+
+[node name="BuffsContainer" type="HBoxContainer" parent="BattleField/EnemyArea/EnemyPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="PlayerArea" type="VBoxContainer" parent="BattleField"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 250.0
+offset_bottom = 300.0
+
+[node name="PlayerPanel" type="Panel" parent="BattleField/PlayerArea"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 200)
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BattleField/PlayerArea/PlayerPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 10.0
+margin_right = -10.0
+margin_bottom = -10.0
+
+[node name="PlayerNameLabel" type="Label" parent="BattleField/PlayerArea/PlayerPanel/VBoxContainer"]
+layout_mode = 2
+text = "Player"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0, 1, 0, 1)
+horizontal_alignment = 1
+
+[node name="PlayerHealthBar" type="ProgressBar" parent="BattleField/PlayerArea/PlayerPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 20)
+value = 100.0
+show_percentage = false
+
+[node name="PlayerHealthLabel" type="Label" parent="BattleField/PlayerArea/PlayerPanel/VBoxContainer"]
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 1
+
+[node name="PlayerShieldLabel" type="Label" parent="BattleField/PlayerArea/PlayerPanel/VBoxContainer"]
+layout_mode = 2
+text = "Shield: 0"
+theme_override_colors/font_color = Color(0.5, 0.5, 1, 1)
+horizontal_alignment = 1
+
+[node name="BuffsContainer" type="HBoxContainer" parent="BattleField/PlayerArea/PlayerPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="HandArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -180.0
+
+[node name="Panel" type="Panel" parent="HandArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HandArea/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 10.0
+margin_right = -20.0
+margin_bottom = -10.0
+
+[node name="HandLabel" type="Label" parent="HandArea/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Your Hand"
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+horizontal_alignment = 1
+
+[node name="CardContainer" type="HBoxContainer" parent="HandArea/Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="DeckInfo" type="HBoxContainer" parent="HandArea/Panel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="DrawPileLabel" type="Label" parent="HandArea/Panel/VBoxContainer/DeckInfo"]
+layout_mode = 2
+text = "Draw: 0"
+theme_override_colors/font_color = Color(0.5, 1, 0.5, 1)
+
+[node name="DiscardPileLabel" type="Label" parent="HandArea/Panel/VBoxContainer/DeckInfo"]
+layout_mode = 2
+text = "Discard: 0"
+theme_override_colors/font_color = Color(1, 0.5, 0.5, 1)
+
+[node name="ExhaustPileLabel" type="Label" parent="HandArea/Panel/VBoxContainer/DeckInfo"]
+layout_mode = 2
+text = "Exhaust: 0"
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="CardDropArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+
+[node name="DropIndicator" type="ColorRect" parent="CardDropArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 1, 1, 0.2)
+visible = false
+
+[node name="DropLabel" type="Label" parent="CardDropArea"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -10.0
+offset_right = 50.0
+offset_bottom = 10.0
+text = "Play Card Here"
+theme_override_colors/font_color = Color(0, 1, 1, 0.5)
+horizontal_alignment = 1
+visible = false
+
+[connection signal="pressed" from="TopPanel/HBoxContainer/EndTurnButton" to="." method="_on_end_turn_pressed"]

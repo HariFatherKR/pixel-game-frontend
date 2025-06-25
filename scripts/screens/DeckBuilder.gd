@@ -1,6 +1,7 @@
 extends Control
 
 signal back_pressed()
+signal start_battle_requested(deck_id: int)
 
 const MAX_DECK_SIZE = 30
 const MAX_COPIES_PER_CARD = 3
@@ -337,3 +338,14 @@ func _on_clear_button_pressed():
 func _on_back_button_pressed():
 	print("Returning to main menu...")
 	emit_signal("back_pressed")
+
+func _on_start_battle_pressed():
+	if deck_cards.size() < 10:
+		print("Deck must have at least 10 cards to start battle")
+		return
+	
+	print("Starting battle with current deck...")
+	
+	# For now, use deck_id -1 to use default deck
+	# TODO: Save deck first and use actual deck_id
+	emit_signal("start_battle_requested", -1)

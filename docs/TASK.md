@@ -66,19 +66,26 @@
 - [x] nginx 설정 업데이트 (새 엔드포인트 프록시)
 - [x] HTML 데모 페이지에 실제 API 연동
 
+### ✅ 완료된 태스크
+
+#### Phase 5: 전투 시스템
+- [x] 전투 씬 구현 (BattleScene.tscn, BattleScene.gd)
+- [x] 카드 드래그 앤 드롭 구현 (CardUI 컴포넌트)
+- [x] 턴제 전투 로직
+- [x] 에너지 시스템 (3 에너지/턴)
+- [x] 기본 카드 효과 시스템
+- [x] 플레이어/적 상태 표시 (HP, Shield, Buffs/Debuffs)
+- [x] 적 의도(Intent) 표시
+- [x] 드로우/디스카드/소멸 덱 관리
+- [x] 게임 세션 API 연동
+- [x] 덱 빌더에서 전투 시작 버튼
+
 ### 🚧 진행 중
 
 #### Phase 3: 인증 및 사용자 관리 (미완료 기능)
 - [ ] 사용자 프로필 화면
 
 ### 📅 예정된 태스크
-
-#### Phase 5: 전투 시스템
-- [ ] 전투 씬 구현 (BattleScene)
-- [ ] 카드 드래그 앤 드롭 개선
-- [ ] 턴제 전투 로직
-- [ ] 에너지 시스템
-- [ ] 카드 효과 시스템
 
 #### Phase 6: WebSocket 실시간 통신
 - [ ] WebSocket 연결 구현
@@ -141,13 +148,13 @@ WS     /ws                    # WebSocket 연결
 
 ## 📊 진행률
 
-전체 진행률: **60%**
+전체 진행률: **70%**
 
 - Phase 1: 100% ✅ (프로젝트 초기 설정)
 - Phase 2: 100% ✅ (API 연동 완료)
 - Phase 3: 90% 🔄 (인증 및 사용자 관리 - API 연동 완료)
 - Phase 4: 100% ✅ (덱 빌더 시스템 - 완료)
-- Phase 5: 0% ⏳ (전투 시스템)
+- Phase 5: 100% ✅ (전투 시스템 - 완료)
 - Phase 6: 0% ⏳ (WebSocket 통신)
 - Phase 7: 0% ⏳ (UI/UX 개선)
 - Phase 8: 0% ⏳ (JavaScript Bridge)
@@ -178,3 +185,9 @@ WS     /ws                    # WebSocket 연결
 - ✅ 덱 저장/불러오기 API 연동
 - ✅ nginx에 새 엔드포인트 프록시 설정
 - ✅ HTML 데모에 실제 인증 API 연동
+- ✅ 전투 시스템 기본 구현 (BattleScene.tscn, BattleScene.gd)
+- ✅ 카드 UI 컴포넌트 구현 (CardUI.tscn, CardUI.gd)
+- ✅ 카드 드래그 앤 드롭 기능
+- ✅ 턴제 전투 흐름 구현
+- ✅ 플레이어/적 상태 및 버프/디버프 표시
+- ✅ 게임 세션 API와 전투 시스템 연동

@@ -6,6 +6,7 @@ const CardListScene = preload("res://scenes/screens/CardList.tscn")
 const CardDetailScene = preload("res://scenes/screens/CardDetail.tscn")
 const LoginScreenScene = preload("res://scenes/screens/LoginScreen.tscn")
 const DeckBuilderScene = preload("res://scenes/screens/DeckBuilder.tscn")
+const BattleScene = preload("res://scenes/screens/BattleScene.tscn")
 
 # Current scene management
 var current_scene: Node
@@ -136,9 +137,42 @@ func _load_deck_builder():
 	# Connect signals
 	if current_scene.has_signal("back_pressed"):
 		current_scene.back_pressed.connect(_on_deck_builder_back_pressed)
+	if current_scene.has_signal("start_battle_requested"):
+		current_scene.start_battle_requested.connect(_on_start_battle_requested)
 	
 	print("Deck builder loaded")
 
 func _on_deck_builder_back_pressed():
 	print("Returning to main menu from deck builder...")
 	_load_main_menu()
+
+func _load_battle_scene(game_id: int = -1, deck_id: int = -1):
+	if current_scene:
+		current_scene.queue_free()
+	
+	current_scene = BattleScene.instantiate()
+	$UI.add_child(current_scene)
+	
+	# Connect signals
+	if current_scene.has_signal("battle_ended"):
+		current_scene.battle_ended.connect(_on_battle_ended)
+	if current_scene.has_signal("return_to_menu"):
+		current_scene.return_to_menu.connect(_on_battle_return_to_menu)
+	
+	# Start battle
+	current_scene.start_battle(game_id, deck_id)
+	
+	print("Battle scene loaded")
+
+func _on_battle_ended(victory: bool):
+	print("Battle ended. Victory: ", victory)
+	# TODO: Show rewards screen
+	_load_main_menu()
+
+func _on_battle_return_to_menu():
+	print("Returning to main menu from battle...")
+	_load_main_menu()
+
+func _on_start_battle_requested(deck_id: int):
+	print("Battle requested with deck_id: ", deck_id)
+	_load_battle_scene(-1, deck_id)

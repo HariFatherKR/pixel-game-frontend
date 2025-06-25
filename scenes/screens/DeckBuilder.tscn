@@ -224,6 +224,13 @@ custom_minimum_size = Vector2(0, 50)
 text = "CLEAR DECK"
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 
+[node name="StartBattleButton" type="Button" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+text = "START BATTLE"
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+
 [connection signal="pressed" from="MainContainer/LeftPanel/Header/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="text_changed" from="MainContainer/LeftPanel/DeckInfo/DeckNameInput" to="." method="_on_deck_name_changed"]
 [connection signal="text_changed" from="MainContainer/LeftPanel/TabContainer/All Cards/FilterContainer/SearchInput" to="." method="_on_search_text_changed"]
@@ -231,3 +238,4 @@ theme_override_colors/font_color = Color(1, 0, 0, 1)
 [connection signal="pressed" from="MainContainer/RightPanel/VBoxContainer/SaveButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="MainContainer/RightPanel/VBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
 [connection signal="pressed" from="MainContainer/RightPanel/VBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="pressed" from="MainContainer/RightPanel/VBoxContainer/StartBattleButton" to="." method="_on_start_battle_pressed"]
