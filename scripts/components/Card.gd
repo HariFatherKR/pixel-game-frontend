@@ -1,124 +1,55 @@
-extends Control
-class_name Card
+extends Panel
 
-signal card_used(card)
-signal card_hovered(card)
-signal card_drag_started(card)
-signal card_drag_ended(card)
+# Card properties
+var card_name: String = "Debug Card"
+var cost: int = 2
+var power: int = 5
+var description: String = "This is a test card"
 
-@export var card_data: Dictionary = {}
-@export var is_draggable: bool = true
-@export var is_playable: bool = true
-
-var is_hovering: bool = false
+# Drag and drop variables
 var is_dragging: bool = false
 var drag_offset: Vector2
-var original_position: Vector2
-var original_scale: Vector2
 
 func _ready():
+	# Update card display
+	update_card_display()
+	
+	# Enable input
+	gui_input.connect(_on_gui_input)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
-	gui_input.connect(_on_gui_input)
-	original_scale = scale
-	
-	if card_data.has("name"):
-		update_card_display()
 
 func update_card_display():
-	if has_node("CardContainer/NameLabel"):
-		$CardContainer/NameLabel.text = card_data.get("name", "")
-	
-	if has_node("CardContainer/CostLabel"):
-		$CardContainer/CostLabel.text = str(card_data.get("cost", 0))
-	
-	if has_node("CardContainer/DescriptionLabel"):
-		$CardContainer/DescriptionLabel.text = card_data.get("description", "")
-	
-	if has_node("CardContainer/CodeSnippet"):
-		$CardContainer/CodeSnippet.text = card_data.get("code_snippet", "")
-
-func _on_mouse_entered():
-	if not is_dragging:
-		is_hovering = true
-		card_hovered.emit(self)
-		_animate_hover()
-
-func _on_mouse_exited():
-	if not is_dragging:
-		is_hovering = false
-		_animate_unhover()
+	if has_node("VBoxContainer/TitleLabel"):
+		$VBoxContainer/TitleLabel.text = card_name
+	if has_node("VBoxContainer/CostLabel"):
+		$VBoxContainer/CostLabel.text = "Cost: " + str(cost)
+	if has_node("VBoxContainer/DescriptionLabel"):
+		$VBoxContainer/DescriptionLabel.text = description
+	if has_node("VBoxContainer/PowerLabel"):
+		$VBoxContainer/PowerLabel.text = "Power: " + str(power)
 
 func _on_gui_input(event):
-	if not is_draggable or not is_playable:
-		return
-		
-	if event is InputEventScreenTouch:
-		if event.pressed:
-			_start_drag(event.position)
-		else:
-			_end_drag()
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				# Start dragging
+				is_dragging = true
+				drag_offset = global_position - event.global_position
+			else:
+				# Stop dragging
+				is_dragging = false
 	
-	elif event is InputEventScreenDrag:
-		if is_dragging:
-			_update_drag(event.position)
+	elif event is InputEventMouseMotion and is_dragging:
+		# Update position while dragging
+		global_position = event.global_position + drag_offset
 
-func _start_drag(touch_position: Vector2):
-	is_dragging = true
-	drag_offset = global_position - touch_position
-	original_position = position
-	card_drag_started.emit(self)
-	
-	# Visual feedback
-	z_index = 10
-	scale = original_scale * 1.1
-	modulate.a = 0.8
+func _on_mouse_entered():
+	# Hover effect
+	modulate = Color(1.2, 1.2, 1.2)
+	scale = Vector2(1.05, 1.05)
 
-func _update_drag(touch_position: Vector2):
-	global_position = touch_position + drag_offset
-
-func _end_drag():
-	is_dragging = false
-	card_drag_ended.emit(self)
-	
-	# Check if card was dropped in valid zone
-	var play_zone = get_tree().get_first_node_in_group("play_zone")
-	if play_zone and play_zone.get_global_rect().has_point(global_position):
-		card_used.emit(self)
-	else:
-		# Return to original position
-		var tween = create_tween()
-		tween.tween_property(self, "position", original_position, 0.3)\
-			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	
-	# Reset visual state
-	z_index = 0
-	scale = original_scale
-	modulate.a = 1.0
-
-func _animate_hover():
-	var tween = create_tween()
-	tween.tween_property(self, "scale", original_scale * 1.05, 0.1)
-	tween.parallel().tween_property(self, "position:y", position.y - 10, 0.1)
-
-func _animate_unhover():
-	var tween = create_tween()
-	tween.tween_property(self, "scale", original_scale, 0.1)
-	tween.parallel().tween_property(self, "position:y", position.y + 10, 0.1)
-
-func set_playable(playable: bool):
-	is_playable = playable
-	modulate = Color.WHITE if playable else Color(0.6, 0.6, 0.6, 1.0)
-	
-func get_card_type() -> String:
-	return card_data.get("type", "action")
-
-func get_card_cost() -> int:
-	return card_data.get("cost", 0)
-
-func execute_effect(target = null):
-	# This will be overridden by specific card types
-	print("Executing card effect: ", card_data.get("name", ""))
-	if card_data.has("effect_function"):
-		# Call the JavaScript bridge here for DOM manipulation
-		pass
+func _on_mouse_exited():
+	# Remove hover effect
+	modulate = Color(1, 1, 1)
+	scale = Vector2(1, 1)
