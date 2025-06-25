@@ -5,6 +5,7 @@ const MainMenuScene = preload("res://scenes/screens/MainMenu.tscn")
 const CardListScene = preload("res://scenes/screens/CardList.tscn")
 const CardDetailScene = preload("res://scenes/screens/CardDetail.tscn")
 const LoginScreenScene = preload("res://scenes/screens/LoginScreen.tscn")
+const DeckBuilderScene = preload("res://scenes/screens/DeckBuilder.tscn")
 
 # Current scene management
 var current_scene: Node
@@ -38,8 +39,8 @@ func _load_main_menu():
 	print("Main menu loaded")
 
 func _on_play_pressed():
-	print("Starting game...")
-	# TODO: Load game scene
+	print("Opening deck builder...")
+	_load_deck_builder()
 	
 func _on_cards_pressed():
 	print("Opening card list...")
@@ -123,4 +124,21 @@ func _on_login_success(username: String, token: String):
 	print("Login successful for user: ", username)
 	# TODO: Store user session data
 	# For now, just return to main menu
+	_load_main_menu()
+
+func _load_deck_builder():
+	if current_scene:
+		current_scene.queue_free()
+	
+	current_scene = DeckBuilderScene.instantiate()
+	$UI.add_child(current_scene)
+	
+	# Connect signals
+	if current_scene.has_signal("back_pressed"):
+		current_scene.back_pressed.connect(_on_deck_builder_back_pressed)
+	
+	print("Deck builder loaded")
+
+func _on_deck_builder_back_pressed():
+	print("Returning to main menu from deck builder...")
 	_load_main_menu()

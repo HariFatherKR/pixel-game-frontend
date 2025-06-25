@@ -112,7 +112,7 @@
         <div class="game-demo">
             <h2 style="margin-top: 30px;">메인 메뉴</h2>
             <div class="menu-container">
-                <button class="game-button" onclick="alert('게임 시작!')">PLAY</button>
+                <button class="game-button" onclick="showDeckBuilderDemo()">PLAY</button>
                 <button class="game-button" onclick="showCardDemo()">CARDS</button>
                 <button class="game-button" onclick="alert('설정 메뉴')">SETTINGS</button>
                 <button class="game-button" onclick="showLoginDemo()">LOGIN</button>
@@ -137,6 +137,43 @@
         <p style="opacity: 0.6; font-size: 0.8em;">
             Godot 엔진으로 실제 게임을 빌드하려면 Godot 에디터에서 HTML5로 익스포트하세요.
         </p>
+    </div>
+
+    <!-- Deck Builder Demo Modal -->
+    <div id="deckBuilderModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 1200px; height: 80%; background: #0a0a0f; border: 2px solid #0ff; border-radius: 10px; padding: 20px; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #0ff; margin: 0;">DECK BUILDER</h2>
+                <button onclick="hideDeckBuilderDemo()" style="background: none; border: 2px solid #0ff; color: #0ff; padding: 10px; cursor: pointer;">✕ Close</button>
+            </div>
+            <div style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
+                <!-- Left Panel - Available Cards -->
+                <div style="flex: 2; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="color: #ff0; margin: 0;">Available Cards</h3>
+                        <input type="text" id="deckSearchInput" placeholder="Search cards..." style="padding: 5px; background: #1a1a2e; border: 1px solid #0ff; color: #fff;">
+                    </div>
+                    <div id="availableCards" style="flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 10px; background: rgba(0, 255, 255, 0.05); border: 1px solid #0ff; border-radius: 5px;">
+                        <!-- Cards will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Right Panel - Deck -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="color: #0f0; margin: 0;">Your Deck</h3>
+                        <span id="deckCount" style="color: #ff0;">0/30 Cards</span>
+                    </div>
+                    <div id="deckCards" style="flex: 1; overflow-y: auto; padding: 10px; background: rgba(0, 255, 0, 0.05); border: 1px solid #0f0; border-radius: 5px;">
+                        <p style="color: #666; text-align: center;">Click cards to add them to your deck</p>
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        <button onclick="saveDeck()" style="flex: 1; padding: 10px; background: rgba(0, 255, 0, 0.2); border: 2px solid #0f0; color: #0f0; cursor: pointer;">Save Deck</button>
+                        <button onclick="clearDeck()" style="flex: 1; padding: 10px; background: rgba(255, 0, 0, 0.2); border: 2px solid #f00; color: #f00; cursor: pointer;">Clear Deck</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Login Demo Modal -->
@@ -351,6 +388,200 @@
             if (e.target.id === 'loginModal') {
                 hideLoginDemo();
             }
+        });
+        
+        // Deck Builder Demo
+        let allCards = [];
+        let deckCards = [];
+        const MAX_DECK_SIZE = 30;
+        const MAX_COPIES = 3;
+        
+        async function showDeckBuilderDemo() {
+            document.getElementById('deckBuilderModal').style.display = 'block';
+            
+            if (allCards.length === 0) {
+                // Fetch cards from API
+                try {
+                    const response = await fetch('/api/v1/cards');
+                    const data = await response.json();
+                    allCards = data.cards;
+                } catch (error) {
+                    console.error('Failed to load cards:', error);
+                    // Use demo cards
+                    allCards = [
+                        {id: 1, name: "Code Slash", type: "action", cost: 2, description: "Deal 8 damage and apply Vulnerable"},
+                        {id: 2, name: "Firewall Up", type: "action", cost: 1, description: "Gain 10 Shield"},
+                        {id: 3, name: "Bug Found", type: "event", cost: 0, description: "Disable all traps, gain 1 random card"},
+                        {id: 4, name: "Syntax Error", type: "action", cost: 3, description: "Deal 15 damage, discard 1 card"},
+                        {id: 5, name: "Debug Mode", type: "power", cost: 2, description: "Draw 1 extra card each turn"},
+                        {id: 6, name: "Cache Hit", type: "action", cost: 0, description: "Draw 2 cards"},
+                        {id: 7, name: "Stack Overflow", type: "event", cost: 1, description: "All enemies take 5 damage"},
+                        {id: 8, name: "Encryption", type: "power", cost: 3, description: "Gain 2 Shield at start of turn"}
+                    ];
+                }
+            }
+            
+            displayAvailableCards();
+            updateDeckDisplay();
+        }
+        
+        function hideDeckBuilderDemo() {
+            document.getElementById('deckBuilderModal').style.display = 'none';
+        }
+        
+        function displayAvailableCards() {
+            const container = document.getElementById('availableCards');
+            const searchText = document.getElementById('deckSearchInput').value.toLowerCase();
+            container.innerHTML = '';
+            
+            allCards.forEach(card => {
+                if (searchText && !card.name.toLowerCase().includes(searchText) && !card.description.toLowerCase().includes(searchText)) {
+                    return;
+                }
+                
+                const cardEl = document.createElement('div');
+                cardEl.style.cssText = `
+                    background: #1a1a2e;
+                    border: 2px solid ${getCardColor(card.type)};
+                    border-radius: 8px;
+                    padding: 10px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    color: #fff;
+                    font-size: 12px;
+                `;
+                
+                cardEl.innerHTML = `
+                    <h4 style="color: ${getCardColor(card.type)}; margin: 0 0 5px 0;">${card.name}</h4>
+                    <p style="margin: 5px 0;">Cost: ${card.cost}</p>
+                    <p style="margin: 5px 0; font-size: 10px;">${card.description}</p>
+                `;
+                
+                cardEl.addEventListener('click', () => addCardToDeck(card));
+                cardEl.addEventListener('mouseenter', () => {
+                    cardEl.style.transform = 'scale(1.05)';
+                    cardEl.style.boxShadow = `0 0 10px ${getCardColor(card.type)}`;
+                });
+                cardEl.addEventListener('mouseleave', () => {
+                    cardEl.style.transform = 'scale(1)';
+                    cardEl.style.boxShadow = 'none';
+                });
+                
+                container.appendChild(cardEl);
+            });
+        }
+        
+        function getCardColor(type) {
+            switch(type) {
+                case 'action': return '#ff8080';
+                case 'event': return '#80ff80';
+                case 'power': return '#8080ff';
+                default: return '#0ff';
+            }
+        }
+        
+        function addCardToDeck(card) {
+            if (deckCards.length >= MAX_DECK_SIZE) {
+                alert('Deck is full! Maximum 30 cards.');
+                return;
+            }
+            
+            const copies = deckCards.filter(c => c.id === card.id).length;
+            if (copies >= MAX_COPIES) {
+                alert(`Maximum ${MAX_COPIES} copies of each card allowed!`);
+                return;
+            }
+            
+            deckCards.push({...card});
+            updateDeckDisplay();
+        }
+        
+        function removeCardFromDeck(cardId) {
+            const index = deckCards.findIndex(c => c.id === cardId);
+            if (index !== -1) {
+                deckCards.splice(index, 1);
+                updateDeckDisplay();
+            }
+        }
+        
+        function updateDeckDisplay() {
+            const container = document.getElementById('deckCards');
+            const countLabel = document.getElementById('deckCount');
+            
+            countLabel.textContent = `${deckCards.length}/${MAX_DECK_SIZE} Cards`;
+            countLabel.style.color = deckCards.length === MAX_DECK_SIZE ? '#f00' : '#ff0';
+            
+            if (deckCards.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">Click cards to add them to your deck</p>';
+                return;
+            }
+            
+            // Group cards by ID
+            const cardGroups = {};
+            deckCards.forEach(card => {
+                if (!cardGroups[card.id]) {
+                    cardGroups[card.id] = {...card, count: 0};
+                }
+                cardGroups[card.id].count++;
+            });
+            
+            container.innerHTML = '';
+            Object.values(cardGroups).forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px;
+                    margin: 5px 0;
+                    background: #1a1a2e;
+                    border: 1px solid ${getCardColor(card.type)};
+                    border-radius: 5px;
+                `;
+                
+                cardEl.innerHTML = `
+                    <span style="color: ${getCardColor(card.type)};">${card.name} (Cost: ${card.cost}) x${card.count}</span>
+                    <button onclick="removeCardFromDeck(${card.id})" style="background: #f00; border: none; color: #fff; padding: 5px 10px; cursor: pointer; border-radius: 3px;">Remove</button>
+                `;
+                
+                container.appendChild(cardEl);
+            });
+        }
+        
+        function saveDeck() {
+            if (deckCards.length < 10) {
+                alert('Deck must have at least 10 cards!');
+                return;
+            }
+            
+            const deckName = prompt('Enter deck name:', 'My Cyber Deck');
+            if (deckName) {
+                console.log('Saving deck:', {name: deckName, cards: deckCards});
+                alert(`Deck "${deckName}" saved! (Demo mode - not persisted)`);
+            }
+        }
+        
+        function clearDeck() {
+            if (confirm('Clear all cards from deck?')) {
+                deckCards = [];
+                updateDeckDisplay();
+            }
+        }
+        
+        // Initialize event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Search functionality
+            const searchInput = document.getElementById('deckSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', displayAvailableCards);
+            }
+            
+            // Close deck builder modal when clicking outside
+            document.getElementById('deckBuilderModal').addEventListener('click', (e) => {
+                if (e.target.id === 'deckBuilderModal') {
+                    hideDeckBuilderDemo();
+                }
+            });
         });
     </script>
 </body>

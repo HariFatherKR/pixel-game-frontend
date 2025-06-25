@@ -1,0 +1,233 @@
+[gd_scene load_steps=3 format=3 uid="uid://deckbuilder123"]
+
+[ext_resource type="Script" path="res://scripts/screens/DeckBuilder.gd" id="1_deck"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.1, 0.1, 0.15, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="DeckBuilder" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_deck")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.1, 1.0)
+
+[node name="MainContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
+theme_override_constants/separation = 20
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="Header" type="HBoxContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/LeftPanel/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DECK BUILDER"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+
+[node name="BackButton" type="Button" parent="MainContainer/LeftPanel/Header"]
+layout_mode = 2
+text = "Back to Menu"
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+
+[node name="HSeparator" type="HSeparator" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="DeckInfo" type="HBoxContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="DeckNameLabel" type="Label" parent="MainContainer/LeftPanel/DeckInfo"]
+layout_mode = 2
+text = "Deck Name:"
+
+[node name="DeckNameInput" type="LineEdit" parent="MainContainer/LeftPanel/DeckInfo"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter deck name"
+text = "My Cyber Deck"
+
+[node name="CardCountLabel" type="Label" parent="MainContainer/LeftPanel/DeckInfo"]
+layout_mode = 2
+text = "Cards: 0/30"
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+
+[node name="HSeparator2" type="HSeparator" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="MainContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+tab_alignment = 1
+
+[node name="All Cards" type="Control" parent="MainContainer/LeftPanel/TabContainer"]
+layout_mode = 2
+
+[node name="FilterContainer" type="HBoxContainer" parent="MainContainer/LeftPanel/TabContainer/All Cards"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+
+[node name="SearchLabel" type="Label" parent="MainContainer/LeftPanel/TabContainer/All Cards/FilterContainer"]
+layout_mode = 2
+text = "Search:"
+
+[node name="SearchInput" type="LineEdit" parent="MainContainer/LeftPanel/TabContainer/All Cards/FilterContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Search cards..."
+
+[node name="TypeFilter" type="OptionButton" parent="MainContainer/LeftPanel/TabContainer/All Cards/FilterContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 0)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainContainer/LeftPanel/TabContainer/All Cards"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 50.0
+
+[node name="CardGrid" type="GridContainer" parent="MainContainer/LeftPanel/TabContainer/All Cards/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="Deck Cards" type="Control" parent="MainContainer/LeftPanel/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainContainer/LeftPanel/TabContainer/Deck Cards"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="DeckCardList" type="VBoxContainer" parent="MainContainer/LeftPanel/TabContainer/Deck Cards/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="RightPanel" type="Panel" parent="MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/RightPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
+
+[node name="DeckStatsLabel" type="Label" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+text = "DECK STATISTICS"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatsContainer" type="VBoxContainer" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TotalCardsLabel" type="Label" parent="MainContainer/RightPanel/VBoxContainer/StatsContainer"]
+layout_mode = 2
+text = "Total Cards: 0"
+
+[node name="ActionCardsLabel" type="Label" parent="MainContainer/RightPanel/VBoxContainer/StatsContainer"]
+layout_mode = 2
+text = "Action Cards: 0"
+theme_override_colors/font_color = Color(1, 0.5, 0.5, 1)
+
+[node name="EventCardsLabel" type="Label" parent="MainContainer/RightPanel/VBoxContainer/StatsContainer"]
+layout_mode = 2
+text = "Event Cards: 0"
+theme_override_colors/font_color = Color(0.5, 1, 0.5, 1)
+
+[node name="PowerCardsLabel" type="Label" parent="MainContainer/RightPanel/VBoxContainer/StatsContainer"]
+layout_mode = 2
+text = "Power Cards: 0"
+theme_override_colors/font_color = Color(0.5, 0.5, 1, 1)
+
+[node name="HSeparator2" type="HSeparator" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="CostCurveLabel" type="Label" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+text = "COST CURVE"
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+horizontal_alignment = 1
+
+[node name="CostCurveContainer" type="VBoxContainer" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Spacer" type="Control" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SaveButton" type="Button" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 50)
+text = "SAVE DECK"
+theme_override_colors/font_color = Color(0, 1, 0, 1)
+
+[node name="LoadButton" type="Button" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 50)
+text = "LOAD DECK"
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+
+[node name="ClearButton" type="Button" parent="MainContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 50)
+text = "CLEAR DECK"
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+
+[connection signal="pressed" from="MainContainer/LeftPanel/Header/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="text_changed" from="MainContainer/LeftPanel/DeckInfo/DeckNameInput" to="." method="_on_deck_name_changed"]
+[connection signal="text_changed" from="MainContainer/LeftPanel/TabContainer/All Cards/FilterContainer/SearchInput" to="." method="_on_search_text_changed"]
+[connection signal="item_selected" from="MainContainer/LeftPanel/TabContainer/All Cards/FilterContainer/TypeFilter" to="." method="_on_type_filter_selected"]
+[connection signal="pressed" from="MainContainer/RightPanel/VBoxContainer/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="MainContainer/RightPanel/VBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
+[connection signal="pressed" from="MainContainer/RightPanel/VBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
