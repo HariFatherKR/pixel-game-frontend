@@ -23,6 +23,11 @@ func _ready():
 func setup_card(data: Dictionary, energy: int = 999):
 	card_data = data
 	
+	# Generate JavaScript code if not present
+	if not data.has("code"):
+		data.code = _generate_javascript_code(data)
+		card_data = data
+	
 	# Update labels
 	name_label.text = data.get("name", "Unknown")
 	cost_label.text = "Cost: " + str(data.get("cost", 0))
@@ -138,3 +143,83 @@ func _get_animation_manager():
 	if battle_scene and battle_scene.has_method("get_node"):
 		return battle_scene.animation_manager
 	return null
+
+func _generate_javascript_code(data: Dictionary) -> String:
+	# Generate JavaScript-like code based on card properties
+	var code = ""
+	var card_name = data.get("name", "").to_lower()
+	var description = data.get("description", "").to_lower()
+	var card_type = data.get("type", "ACTION")
+	var cost = data.get("cost", 1)
+	
+	# Parse description for damage/heal/shield values
+	var damage_regex = RegEx.new()
+	damage_regex.compile("(\\d+)\\s*damage")
+	var damage_match = damage_regex.search(description)
+	
+	var heal_regex = RegEx.new()
+	heal_regex.compile("(\\d+)\\s*(heal|health|hp)")
+	var heal_match = heal_regex.search(description)
+	
+	var shield_regex = RegEx.new()
+	shield_regex.compile("(\\d+)\\s*(shield|block|armor)")
+	var shield_match = shield_regex.search(description)
+	
+	# Generate code based on card effects
+	if damage_match:
+		var damage_amount = damage_match.get_string(1).to_int()
+		code += "// Deal damage to enemy\n"
+		code += "enemy.takeDamage(" + str(damage_amount) + ");\n"
+		code += "console.log('Dealt " + str(damage_amount) + " damage!');"
+	elif heal_match:
+		var heal_amount = heal_match.get_string(1).to_int()
+		code += "// Heal player\n"
+		code += "player.heal(" + str(heal_amount) + ");\n"
+		code += "console.log('Healed " + str(heal_amount) + " HP!');"
+	elif shield_match:
+		var shield_amount = shield_match.get_string(1).to_int()
+		code += "// Gain shield\n"
+		code += "player.gainShield(" + str(shield_amount) + ");\n"
+		code += "console.log('Gained " + str(shield_amount) + " shield!');"
+	else:
+		# Generate code based on card name/type
+		if "slash" in card_name or "attack" in card_name:
+			code += "// Attack enemy\n"
+			code += "enemy.takeDamage(8);\n"
+			code += "console.log('Executed attack command!');"
+		elif "debug" in card_name or "bug" in card_name:
+			code += "// Debug system\n"
+			code += "system.debug();\n"
+			code += "console.log('Debugging enemy vulnerabilities...');"
+		elif "hack" in card_name or "exploit" in card_name:
+			code += "// Exploit enemy system\n"
+			code += "enemy.exploit();\n"
+			code += "console.log('Enemy system compromised!');"
+		elif "firewall" in card_name or "shield" in card_name:
+			code += "// Activate defensive systems\n"
+			code += "player.activateFirewall();\n"
+			code += "console.log('Firewall protocols active!');"
+		elif "virus" in card_name or "malware" in card_name:
+			code += "// Deploy virus\n"
+			code += "enemy.infect(virus);\n"
+			code += "console.log('Virus deployed successfully!');"
+		else:
+			# Default effect based on type
+			match card_type:
+				"ACTION":
+					code += "// Execute action\n"
+					code += "executeAction('" + data.get("name", "Unknown") + "');\n"
+					code += "console.log('Action executed!');"
+				"EVENT":
+					code += "// Trigger event\n"
+					code += "triggerEvent('" + data.get("name", "Unknown") + "');\n"
+					code += "console.log('Event triggered!');"
+				"POWER":
+					code += "// Activate power\n"
+					code += "activatePower('" + data.get("name", "Unknown") + "');\n"
+					code += "console.log('Power activated!');"
+	
+	return code
+
+func get_card_code() -> String:
+	return card_data.get("code", "")

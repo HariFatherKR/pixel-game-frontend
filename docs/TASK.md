@@ -80,6 +80,15 @@
 - [x] 게임 세션 API 연동
 - [x] 덱 빌더에서 전투 시작 버튼
 
+### ✅ 완료된 태스크
+
+#### Phase 8: JavaScript Bridge (완료)
+- [x] 비브 코딩 시스템 구현
+- [x] 카드 효과의 JavaScript 코드 자동 생성
+- [x] 실시간 코드 실행 및 DOM 조작 시뮬레이션
+- [x] 개발자 콘솔 패널 구현
+- [x] 코드 뷰어 및 편집기 구현
+
 ### 🚧 진행 중
 
 #### Phase 7: UI/UX 개선 (마무리 단계)
@@ -108,10 +117,13 @@
 - [ ] 모바일 터치 최적화
 
 #### Phase 8: JavaScript Bridge
-- [ ] Godot ↔ JavaScript 통신 구현
-- [ ] 카드 효과의 DOM 조작
-- [ ] 콘솔 패널 구현
-- [ ] 코드 실행 시각화
+- [x] Godot ↔ JavaScript 통신 구현 (JavaScriptBridge.gd)
+- [x] 카드 효과의 DOM 조작 (DOM 시뮬레이션)
+- [x] 콘솔 패널 구현 (ConsolePanel.gd)
+- [x] 코드 실행 시각화 (CodeViewer.gd)
+- [x] JavaScript 코드 자동 생성 (카드 설명 기반)
+- [x] 문법 강조 표시 (JavaScriptHighlighter.gd)
+- [x] 비브 코딩 체험 (카드 플레이 시 실시간 코드 실행)
 
 ## 🔧 기술 스택
 
@@ -156,16 +168,16 @@ WS     /ws                    # WebSocket 연결
 
 ## 📊 진행률
 
-전체 진행률: **85%**
+전체 진행률: **95%**
 
 - Phase 1: 100% ✅ (프로젝트 초기 설정)
 - Phase 2: 100% ✅ (API 연동 완료)
 - Phase 3: 90% 🔄 (인증 및 사용자 관리 - API 연동 완료)
 - Phase 4: 100% ✅ (덱 빌더 시스템 - 완료)
 - Phase 5: 100% ✅ (전투 시스템 - 완료)
-- Phase 6: 0% ⏳ (WebSocket 통신)
+- Phase 6: 0% ⏳ (WebSocket 통신 - 백엔드 미구현)
 - Phase 7: 90% 🔄 (UI/UX 개선 - 애니메이션/사운드 완료)
-- Phase 8: 0% ⏳ (JavaScript Bridge)
+- Phase 8: 100% ✅ (JavaScript Bridge - 비브 코딩 완료)
 
 ### 최근 완료 사항 (2025-06-25)
 - ✅ 개별 카드 상세 보기 화면 구현
@@ -209,3 +221,11 @@ WS     /ws                    # WebSocket 연결
 - ✅ 매트릭스 비 배경 효과
 - ✅ 입자 버스트 효과 (승리 시)
 - ✅ 턴 전환 페이드 애니메이션
+- ✅ JavaScript Bridge 시스템 구현 (JavaScriptBridge.gd)
+- ✅ 비브 코딩 체험 - 카드 플레이 시 실시간 코드 실행
+- ✅ JavaScript 코드 자동 생성 (카드 설명 파싱 기반)
+- ✅ 개발자 콘솔 패널 구현 (ConsolePanel.gd)
+- ✅ 코드 뷰어 및 편집기 구현 (CodeViewer.gd)
+- ✅ JavaScript 문법 강조 표시 (JavaScriptHighlighter.gd)
+- ✅ DOM 시뮬레이션 및 실시간 UI 연동
+- ✅ 카드 효과 로깅 및 시각화

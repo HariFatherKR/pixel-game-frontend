@@ -85,6 +85,19 @@ func _setup_animations():
 	var sound_manager = preload("res://scripts/audio/SoundManager.gd").new()
 	sound_manager.name = "SoundManager"
 	add_child(sound_manager)
+	
+	# Load JavaScript bridge for vibe coding
+	var js_bridge = preload("res://scripts/bridge/JavaScriptBridge.gd").new()
+	js_bridge.name = "JavaScriptBridge"
+	add_child(js_bridge)
+	js_bridge.code_executed.connect(_on_code_executed)
+	js_bridge.dom_updated.connect(_on_dom_updated)
+	
+	# Load code viewer for debugging
+	var code_viewer = preload("res://scripts/screens/CodeViewer.gd").new()
+	code_viewer.name = "CodeViewer"
+	add_child(code_viewer)
+	code_viewer.code_executed.connect(_on_manual_code_executed)
 
 func _apply_cyberpunk_theme():
 	# Apply glowing effects to important UI elements
@@ -306,6 +319,11 @@ func _play_card(card: Dictionary):
 	
 	print("Playing card: ", card.name)
 	
+	# Execute JavaScript code for vibe coding experience
+	var js_bridge = get_node_or_null("JavaScriptBridge")
+	if js_bridge:
+		js_bridge.execute_card_code(card)
+	
 	# Screen shake for impact
 	if animation_manager:
 		animation_manager.screen_shake(5.0, 0.2)
@@ -380,7 +398,51 @@ func _handle_defeat():
 		animation_manager.play_sound_effect("defeat")
 	emit_signal("battle_ended", false)
 
+func _on_code_executed(result: String):
+	print("JavaScript code executed: ", result)
+	# Handle vibe coding results and sync with game state
+
+func _on_dom_updated(element_id: String, property: String, value: Variant):
+	print("DOM updated: ", element_id, ".", property, " = ", value)
+	# Sync DOM changes with actual game UI
+	match element_id:
+		"player-health":
+			if property == "value":
+				player_health_bar.value = value
+				player_health_label.text = str(value) + "/" + str(player_state.get("max_health", 100))
+		"enemy-health":
+			if property == "value":
+				enemy_health_bar.value = value
+				enemy_health_label.text = str(value) + "/" + str(enemy_state.get("max_health", 50))
+		"player-shield":
+			if property == "value":
+				player_shield_label.text = "Shield: " + str(value)
+		"enemy-shield":
+			if property == "value":
+				enemy_shield_label.text = "Shield: " + str(value)
+		"energy-display":
+			if property == "value":
+				current_energy = value
+				energy_label.text = "Energy: " + str(current_energy) + "/" + str(max_energy)
+
+func _on_manual_code_executed(code: String):
+	print("Manual code execution: ", code)
+	var js_bridge = get_node_or_null("JavaScriptBridge")
+	if js_bridge:
+		js_bridge.execute_raw_code(code)
+
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
 		# TODO: Show pause menu
 		pass
+	elif event.is_action_pressed("ui_accept"):
+		# Show/hide JavaScript console for debugging
+		var console = get_node_or_null("JavaScriptBridge/ConsolePanel")
+		if console:
+			console.toggle_visibility()
+	elif event.is_action_pressed("ui_select"):
+		# Show code viewer for selected card
+		if selected_card:
+			var code_viewer = get_node_or_null("CodeViewer")
+			if code_viewer:
+				code_viewer.show_card_code(selected_card)
