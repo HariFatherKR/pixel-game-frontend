@@ -1,6 +1,10 @@
 extends Panel
 
+# Signals
+signal card_clicked(card_id: int)
+
 # Card properties
+var card_id: int = 0
 var card_name: String = "Debug Card"
 var cost: int = 2
 var power: int = 5
@@ -41,7 +45,12 @@ func _on_gui_input(event):
 				is_dragging = true
 				drag_offset = global_position - event.global_position
 			else:
-				# Stop dragging
+				# Stop dragging and check for click
+				if is_dragging:
+					var drag_distance = (global_position - (event.global_position + drag_offset)).length()
+					if drag_distance < 10:  # Consider it a click if drag distance is small
+						emit_signal("card_clicked", card_id)
+						print("Card clicked: ", card_id, " - ", card_name)
 				is_dragging = false
 	
 	elif event is InputEventMouseMotion and is_dragging:

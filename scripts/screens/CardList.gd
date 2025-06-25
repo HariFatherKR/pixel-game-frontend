@@ -1,6 +1,7 @@
 extends Control
 
 signal back_pressed()
+signal card_detail_requested(card_id: int)
 
 var api_client
 var cards_data = []
@@ -60,15 +61,23 @@ func _create_card_ui(card_data) -> Control:
 	var card_instance = card_scene.instantiate()
 	
 	# Set card data
+	card_instance.card_id = card_data.id
 	card_instance.card_name = card_data.name
 	card_instance.cost = card_data.cost
 	card_instance.description = card_data.description
 	card_instance.card_type = card_data.type
 	
+	# Connect click signal
+	card_instance.card_clicked.connect(_on_card_clicked)
+	
 	# Update display
 	card_instance.call_deferred("update_card_display")
 	
 	return card_instance
+
+func _on_card_clicked(card_id: int):
+	print("Card clicked in list: ", card_id)
+	emit_signal("card_detail_requested", card_id)
 
 func _on_refresh_button_pressed():
 	print("Refresh button pressed")

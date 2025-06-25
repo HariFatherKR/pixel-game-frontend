@@ -3,6 +3,7 @@ extends Node2D
 # Scene references
 const MainMenuScene = preload("res://scenes/screens/MainMenu.tscn")
 const CardListScene = preload("res://scenes/screens/CardList.tscn")
+const CardDetailScene = preload("res://scenes/screens/CardDetail.tscn")
 
 # Current scene management
 var current_scene: Node
@@ -56,12 +57,38 @@ func _load_card_list():
 	current_scene = CardListScene.instantiate()
 	$UI.add_child(current_scene)
 	
-	# Connect back signal
+	# Connect signals
 	if current_scene.has_signal("back_pressed"):
 		current_scene.back_pressed.connect(_on_card_list_back_pressed)
+	if current_scene.has_signal("card_detail_requested"):
+		current_scene.card_detail_requested.connect(_on_card_detail_requested)
 	
 	print("Card list loaded")
 
 func _on_card_list_back_pressed():
 	print("Returning to main menu...")
 	_load_main_menu()
+
+func _on_card_detail_requested(card_id: int):
+	print("Loading card detail for ID: ", card_id)
+	_load_card_detail(card_id)
+
+func _load_card_detail(card_id: int):
+	if current_scene:
+		current_scene.queue_free()
+	
+	current_scene = CardDetailScene.instantiate()
+	$UI.add_child(current_scene)
+	
+	# Connect back signal
+	if current_scene.has_signal("back_pressed"):
+		current_scene.back_pressed.connect(_on_card_detail_back_pressed)
+	
+	# Load card data
+	current_scene.call_deferred("load_card", card_id)
+	
+	print("Card detail loaded")
+
+func _on_card_detail_back_pressed():
+	print("Returning to card list...")
+	_load_card_list()

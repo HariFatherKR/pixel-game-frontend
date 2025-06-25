@@ -1,0 +1,130 @@
+[gd_scene load_steps=3 format=3 uid="uid://carddetail789"]
+
+[ext_resource type="Script" path="res://scripts/screens/CardDetail.gd" id="1_carddetail"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.1, 0.1, 0.2, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 1, 1, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="CardDetail" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_carddetail")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.1, 1.0)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -250.0
+offset_right = 200.0
+offset_bottom = 250.0
+theme_override_constants/separation = 20
+
+[node name="HeaderContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="VBoxContainer/HeaderContainer"]
+layout_mode = 2
+text = "← Back"
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/HeaderContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Loading card details..."
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+horizontal_alignment = 1
+
+[node name="CardContainer" type="Panel" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="CardContent" type="VBoxContainer" parent="VBoxContainer/CardContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
+theme_override_constants/separation = 15
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer/CardContainer/CardContent"]
+layout_mode = 2
+text = "Card Name"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+horizontal_alignment = 1
+
+[node name="TypeContainer" type="HBoxContainer" parent="VBoxContainer/CardContainer/CardContent"]
+layout_mode = 2
+
+[node name="TypeLabel" type="Label" parent="VBoxContainer/CardContainer/CardContent/TypeContainer"]
+layout_mode = 2
+text = "Type: "
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+
+[node name="TypeValue" type="Label" parent="VBoxContainer/CardContainer/CardContent/TypeContainer"]
+layout_mode = 2
+text = "action"
+theme_override_colors/font_color = Color(1, 0, 1, 1)
+
+[node name="CostContainer" type="HBoxContainer" parent="VBoxContainer/CardContainer/CardContent"]
+layout_mode = 2
+
+[node name="CostLabel" type="Label" parent="VBoxContainer/CardContainer/CardContent/CostContainer"]
+layout_mode = 2
+text = "Cost: "
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+
+[node name="CostValue" type="Label" parent="VBoxContainer/CardContainer/CardContent/CostContainer"]
+layout_mode = 2
+text = "2"
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/CardContainer/CardContent"]
+layout_mode = 2
+
+[node name="DescriptionLabel" type="Label" parent="VBoxContainer/CardContainer/CardContent"]
+layout_mode = 2
+text = "Card description will appear here..."
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/CardContainer/CardContent"]
+layout_mode = 2
+
+[node name="EffectLabel" type="Label" parent="VBoxContainer/CardContainer/CardContent"]
+layout_mode = 2
+text = "// JavaScript Effect:\n// element.style.filter = 'hue-rotate(45deg)'\n// console.log('Code Slash activated!')"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0, 1, 0, 1)
+autowrap_mode = 2
+
+[connection signal="pressed" from="VBoxContainer/HeaderContainer/BackButton" to="." method="_on_back_button_pressed"]
