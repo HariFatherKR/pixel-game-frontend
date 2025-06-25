@@ -263,16 +263,71 @@ func _on_type_filter_selected(index: int):
 
 func _on_save_button_pressed():
 	print("Saving deck: ", current_deck_name)
-	# TODO: Implement deck saving when API is ready
-	var deck_data = {
-		"name": current_deck_name,
-		"cards": deck_cards
-	}
-	print("Deck data: ", deck_data)
+	
+	if deck_cards.size() < 10:
+		print("Deck must have at least 10 cards")
+		return
+	
+	# Extract card IDs from deck cards
+	var card_ids = []
+	for card in deck_cards:
+		card_ids.append(card.id)
+	
+	# Save deck via API
+	api_client.create_deck(current_deck_name, card_ids)
+	
+	# Connect to response for this operation
+	if not api_client.request_completed.is_connected(_on_deck_saved):
+		api_client.request_completed.connect(_on_deck_saved, CONNECT_ONE_SHOT)
+	if not api_client.request_failed.is_connected(_on_deck_save_failed):
+		api_client.request_failed.connect(_on_deck_save_failed, CONNECT_ONE_SHOT)
+
+func _on_deck_saved(response):
+	print("Deck saved successfully: ", response)
+	# TODO: Show success message to user
+
+func _on_deck_save_failed(error):
+	print("Failed to save deck: ", error)
+	# TODO: Show error message to user
 
 func _on_load_button_pressed():
-	print("Loading deck...")
-	# TODO: Implement deck loading when API is ready
+	print("Loading decks...")
+	api_client.get_decks()
+	
+	# Connect to response for this operation
+	if not api_client.request_completed.is_connected(_on_decks_loaded):
+		api_client.request_completed.connect(_on_decks_loaded, CONNECT_ONE_SHOT)
+	if not api_client.request_failed.is_connected(_on_decks_load_failed):
+		api_client.request_failed.connect(_on_decks_load_failed, CONNECT_ONE_SHOT)
+
+func _on_decks_loaded(response):
+	print("Decks loaded: ", response)
+	if response.has("decks") and response.decks.size() > 0:
+		# TODO: Show deck selection dialog
+		# For now, load the first deck
+		var first_deck = response.decks[0]
+		_load_deck_data(first_deck)
+
+func _on_decks_load_failed(error):
+	print("Failed to load decks: ", error)
+
+func _load_deck_data(deck_data):
+	current_deck_name = deck_data.name
+	deck_name_input.text = current_deck_name
+	
+	# Clear current deck
+	deck_cards.clear()
+	
+	# Load cards by IDs
+	var card_ids = deck_data.card_ids
+	for card_id in card_ids:
+		# Find card in all_cards
+		for card in all_cards:
+			if card.id == card_id:
+				deck_cards.append(card)
+				break
+	
+	_update_deck_display()
 
 func _on_clear_button_pressed():
 	deck_cards.clear()

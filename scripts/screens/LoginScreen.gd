@@ -14,6 +14,7 @@ var api_client
 
 # Register form
 @onready var register_username = $LoginContainer/VBoxContainer/TabContainer/Register/RegisterForm/UsernameInput
+@onready var register_email = $LoginContainer/VBoxContainer/TabContainer/Register/RegisterForm/EmailInput
 @onready var register_password = $LoginContainer/VBoxContainer/TabContainer/Register/RegisterForm/PasswordInput
 @onready var register_confirm = $LoginContainer/VBoxContainer/TabContainer/Register/RegisterForm/ConfirmInput
 
@@ -55,24 +56,22 @@ func _on_login_button_pressed():
 	
 	_show_status("Logging in...")
 	
-	# Temporary demo logic (remove when server endpoints are ready)
-	if username == "demo" and password == "demo123":
-		_show_status("Login successful! (Demo mode)")
-		await get_tree().create_timer(1.0).timeout
-		emit_signal("login_success", username, "demo_token_123")
-	else:
-		# Real API call (uncomment when server is ready)
-		# api_client.login(username, password)
-		_show_status("Login failed! (Server not available, try demo/demo123)", true)
+	# Real API call
+	api_client.login(username, password)
 
 func _on_register_button_pressed():
 	var username = register_username.text.strip_edges()
+	var email = register_email.text.strip_edges()
 	var password = register_password.text
 	var confirm = register_confirm.text
 	
 	# Validation
 	if username.length() < 3:
 		_show_status("Username must be at least 3 characters", true)
+		return
+	
+	if not _is_valid_email(email):
+		_show_status("Please enter a valid email", true)
 		return
 	
 	if password.length() < 6:
@@ -85,33 +84,33 @@ func _on_register_button_pressed():
 	
 	_show_status("Registering...")
 	
-	# Temporary demo logic
-	_show_status("Registration successful! (Demo mode)")
-	await get_tree().create_timer(1.0).timeout
-	# Switch to login tab
-	tab_container.current_tab = 0
-	login_username.text = username
-	login_password.text = ""
-	_show_status("Please login with your new account")
-	
-	# Real API call (uncomment when server is ready)
-	# api_client.register(username, password)
+	# Real API call
+	api_client.register(username, email, password)
+
+func _is_valid_email(email: String) -> bool:
+	# Basic email validation
+	var regex = RegEx.new()
+	regex.compile("^[^@]+@[^@]+\\.[^@]+$")
+	return regex.search(email) != null
 
 func _on_api_request_completed(response):
 	print("Auth API response: ", response)
 	
 	if response.has("token"):
-		# Login successful
-		var username = response.get("username", login_username.text)
+		# Login/Register successful
 		var token = response.get("token", "")
-		api_client.auth_token = token
-		_show_status("Login successful!")
-		await get_tree().create_timer(1.0).timeout
-		emit_signal("login_success", username, token)
-	elif response.has("message"):
-		# Registration successful
-		_show_status("Registration successful! Please login.")
-		tab_container.current_tab = 0
+		var refresh_token = response.get("refresh_token", "")
+		api_client.set_auth_tokens(token, refresh_token)
+		
+		if response.has("user"):
+			var username = response.user.get("username", "")
+			_show_status("Welcome, " + username + "!")
+			await get_tree().create_timer(1.0).timeout
+			emit_signal("login_success", username, token)
+		else:
+			_show_status("Authentication successful!")
+			await get_tree().create_timer(1.0).timeout
+			emit_signal("login_success", "", token)
 	else:
 		_show_status("Unexpected response", true)
 

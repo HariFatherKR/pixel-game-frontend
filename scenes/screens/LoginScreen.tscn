@@ -133,6 +133,16 @@ layout_mode = 2
 placeholder_text = "Choose username"
 theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.5, 1)
 
+[node name="EmailLabel" type="Label" parent="LoginContainer/VBoxContainer/TabContainer/Register/RegisterForm"]
+layout_mode = 2
+text = "Email"
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+
+[node name="EmailInput" type="LineEdit" parent="LoginContainer/VBoxContainer/TabContainer/Register/RegisterForm"]
+layout_mode = 2
+placeholder_text = "Enter email"
+theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.5, 1)
+
 [node name="PasswordLabel" type="Label" parent="LoginContainer/VBoxContainer/TabContainer/Register/RegisterForm"]
 layout_mode = 2
 text = "Password"

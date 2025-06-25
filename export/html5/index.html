@@ -224,7 +224,17 @@
             
             try {
                 console.log('Fetching cards from server...');
-                const response = await fetch('/api/v1/cards');
+                
+                // Get auth token
+                const token = localStorage.getItem('authToken') || authToken;
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                if (token) {
+                    headers['Authorization'] = 'Bearer ' + token;
+                }
+                
+                const response = await fetch('/cards', { headers });
                 console.log('Response status:', response.status);
                 
                 if (!response.ok) {
@@ -324,7 +334,9 @@
             document.getElementById('loginStatus').textContent = '';
         }
         
-        function doLogin() {
+        let authToken = '';
+        
+        async function doLogin() {
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
             
@@ -338,21 +350,38 @@
                 return;
             }
             
-            // Demo logic
-            if (username === 'demo' && password === 'demo123') {
-                document.getElementById('loginStatus').style.color = '#0f0';
-                document.getElementById('loginStatus').textContent = 'Login successful! (Demo mode)';
-                setTimeout(() => {
-                    hideLoginDemo();
-                    alert('Welcome back, ' + username + '!');
-                }, 1500);
-            } else {
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    document.getElementById('loginStatus').style.color = '#0f0';
+                    document.getElementById('loginStatus').textContent = 'Login successful!';
+                    setTimeout(() => {
+                        hideLoginDemo();
+                        alert('Welcome back, ' + (data.user?.username || username) + '!');
+                    }, 1500);
+                } else {
+                    document.getElementById('loginStatus').style.color = '#f00';
+                    document.getElementById('loginStatus').textContent = data.error || 'Login failed!';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
                 document.getElementById('loginStatus').style.color = '#f00';
-                document.getElementById('loginStatus').textContent = 'Login failed! Try demo/demo123';
+                document.getElementById('loginStatus').textContent = 'Network error. Please try again.';
             }
         }
         
-        function doRegister() {
+        async function doRegister() {
             const username = document.getElementById('regUsername').value;
             const password = document.getElementById('regPassword').value;
             const confirm = document.getElementById('regConfirm').value;
@@ -372,15 +401,37 @@
                 return;
             }
             
-            document.getElementById('loginStatus').style.color = '#0f0';
-            document.getElementById('loginStatus').textContent = 'Registration successful! (Demo mode)';
-            setTimeout(() => {
-                switchTab('login');
-                document.getElementById('loginUsername').value = username;
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('loginStatus').style.color = '#ff0';
-                document.getElementById('loginStatus').textContent = 'Please login with your new account';
-            }, 1500);
+            try {
+                const email = username + '@pixelgame.com'; // Generate email for demo
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password, platform: 'web' })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('loginStatus').style.color = '#0f0';
+                    document.getElementById('loginStatus').textContent = 'Registration successful!';
+                    setTimeout(() => {
+                        switchTab('login');
+                        document.getElementById('loginUsername').value = username;
+                        document.getElementById('loginPassword').value = '';
+                        document.getElementById('loginStatus').style.color = '#ff0';
+                        document.getElementById('loginStatus').textContent = 'Please login with your new account';
+                    }, 1500);
+                } else {
+                    document.getElementById('loginStatus').style.color = '#f00';
+                    document.getElementById('loginStatus').textContent = data.error || 'Registration failed!';
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                document.getElementById('loginStatus').style.color = '#f00';
+                document.getElementById('loginStatus').textContent = 'Network error. Please try again.';
+            }
         }
         
         // Close login modal when clicking outside
@@ -402,9 +453,17 @@
             if (allCards.length === 0) {
                 // Fetch cards from API
                 try {
-                    const response = await fetch('/api/v1/cards');
+                    const token = localStorage.getItem('authToken') || authToken;
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    if (token) {
+                        headers['Authorization'] = 'Bearer ' + token;
+                    }
+                    
+                    const response = await fetch('/cards', { headers });
                     const data = await response.json();
-                    allCards = data.cards;
+                    allCards = data.cards || [];
                 } catch (error) {
                     console.error('Failed to load cards:', error);
                     // Use demo cards
