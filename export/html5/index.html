@@ -139,8 +139,16 @@
             document.getElementById('cardModal').style.display = 'block';
             
             try {
-                const response = await fetch('http://localhost:8080/api/v1/cards');
+                console.log('Fetching cards from server...');
+                const response = await fetch('/api/v1/cards');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('Cards data:', data);
                 
                 const container = document.getElementById('cardContainer');
                 container.innerHTML = '';
@@ -182,8 +190,13 @@
                 });
                 
             } catch (error) {
+                console.error('Error loading cards:', error);
                 document.getElementById('cardContainer').innerHTML = 
-                    '<div style="color: #f00; text-align: center;">Failed to load cards. Make sure the server is running on port 8080.</div>';
+                    `<div style="color: #f00; text-align: center;">
+                        <p>Failed to load cards. Make sure the server is running on port 8080.</p>
+                        <p style="font-size: 12px; margin-top: 10px;">Error: ${error.message}</p>
+                        <p style="font-size: 12px; margin-top: 10px;">Check browser console for details (F12)</p>
+                    </div>`;
             }
         }
         
