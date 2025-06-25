@@ -6,6 +6,7 @@ signal return_to_menu()
 var api_client
 var game_session = null
 var current_game_id = -1
+var animation_manager
 
 # Battle state
 var player_state = {}
@@ -53,6 +54,8 @@ func _ready():
 	print("BattleScene ready")
 	_setup_api_client()
 	_setup_drop_area()
+	_setup_animations()
+	_apply_cyberpunk_theme()
 
 func _setup_api_client():
 	api_client = preload("res://scripts/network/APIClient.gd").new()
@@ -70,6 +73,30 @@ func _setup_drop_area():
 	# Make drop area always visible during player turn
 	drop_indicator.visible = true
 	drop_label.visible = true
+
+func _setup_animations():
+	# Load animation manager
+	animation_manager = preload("res://scripts/effects/AnimationManager.gd").new()
+	animation_manager.name = "AnimationManager"
+	add_child(animation_manager)
+	animation_manager.animation_completed.connect(_on_animation_completed)
+	
+	# Load sound manager
+	var sound_manager = preload("res://scripts/audio/SoundManager.gd").new()
+	sound_manager.name = "SoundManager"
+	add_child(sound_manager)
+
+func _apply_cyberpunk_theme():
+	# Apply glowing effects to important UI elements
+	if animation_manager:
+		animation_manager.add_glow_effect(energy_label, Color.GREEN)
+		animation_manager.pulse_animation(end_turn_button, 1.05, 1.0)
+		
+		# Add matrix rain effect to background
+		animation_manager.matrix_rain_effect(self)
+
+func _on_animation_completed(animation_name: String):
+	print("Animation completed: ", animation_name)
 
 func start_battle(game_id: int = -1, deck_id: int = -1):
 	print("Starting battle...")
@@ -118,17 +145,30 @@ func _handle_game_session_update(session):
 		_handle_defeat()
 
 func _update_player_state(state):
+	var old_health = player_state.get("health", state.health)
 	player_state = state
 	
-	# Update health
+	# Update health with animation
 	player_health_bar.max_value = state.max_health
+	
+	# Animate health change
+	if animation_manager and old_health != state.health:
+		var health_diff = old_health - state.health
+		if health_diff > 0:
+			# Player took damage
+			animation_manager.show_damage_number(player_health_bar, health_diff, false)
+			animation_manager.screen_shake(8.0, 0.4)
+		elif health_diff < 0:
+			# Player healed
+			animation_manager.show_damage_number(player_health_bar, abs(health_diff), true)
+	
 	player_health_bar.value = state.health
 	player_health_label.text = str(state.health) + "/" + str(state.max_health)
 	
 	# Update shield
 	player_shield_label.text = "Shield: " + str(state.shield)
 	
-	# Update energy
+	# Update energy with glow effect
 	current_energy = state.energy
 	max_energy = state.max_energy
 	energy_label.text = "Energy: " + str(current_energy) + "/" + str(max_energy)
@@ -145,21 +185,36 @@ func _update_player_state(state):
 	_update_status_effects(player_buffs_container, state.buffs, state.debuffs)
 
 func _update_enemy_state(state):
+	var old_health = enemy_state.get("health", state.health)
 	enemy_state = state
 	
 	# Update name
 	enemy_name_label.text = state.get("name", "Enemy")
 	
-	# Update health
+	# Update health with animation
 	enemy_health_bar.max_value = state.max_health
+	
+	# Animate health change
+	if animation_manager and old_health != state.health:
+		var health_diff = old_health - state.health
+		if health_diff > 0:
+			# Enemy took damage
+			animation_manager.show_damage_number(enemy_health_bar, health_diff, false)
+			animation_manager.cyber_glitch_effect(enemy_name_label)
+		elif health_diff < 0:
+			# Enemy healed
+			animation_manager.show_damage_number(enemy_health_bar, abs(health_diff), true)
+	
 	enemy_health_bar.value = state.health
 	enemy_health_label.text = str(state.health) + "/" + str(state.max_health)
 	
 	# Update shield
 	enemy_shield_label.text = "Shield: " + str(state.shield)
 	
-	# Update intent
+	# Update intent with glow effect
 	_update_enemy_intent(state.intent)
+	if animation_manager:
+		animation_manager.add_glow_effect(intent_label, Color.RED, 1.2)
 	
 	# Update buffs/debuffs
 	_update_status_effects(enemy_buffs_container, state.buffs, state.debuffs)
@@ -244,9 +299,17 @@ func _on_card_played(card: Dictionary):
 func _play_card(card: Dictionary):
 	if card.cost > current_energy:
 		print("Not enough energy!")
+		if animation_manager:
+			animation_manager.cyber_glitch_effect(energy_label)
+			animation_manager.play_sound_effect("error")
 		return
 	
 	print("Playing card: ", card.name)
+	
+	# Screen shake for impact
+	if animation_manager:
+		animation_manager.screen_shake(5.0, 0.2)
+		animation_manager.play_sound_effect("card_play")
 	
 	# Check if card needs target
 	var target_id = -1
@@ -270,6 +333,20 @@ func _on_end_turn_pressed():
 	is_player_turn = false
 	end_turn_button.disabled = true
 	
+	# Add turn transition effect
+	if animation_manager:
+		animation_manager.play_sound_effect("turn_end")
+		# Add fade effect to signal turn change
+		var fade_overlay = ColorRect.new()
+		fade_overlay.color = Color(0, 0, 0, 0)
+		fade_overlay.size = get_viewport().size
+		add_child(fade_overlay)
+		
+		var tween = create_tween()
+		tween.tween_property(fade_overlay, "color:a", 0.3, 0.5)
+		tween.tween_property(fade_overlay, "color:a", 0.0, 0.5)
+		tween.tween_callback(fade_overlay.queue_free)
+	
 	# Send end turn action
 	api_client.end_turn(current_game_id)
 
@@ -291,10 +368,16 @@ func _handle_action_result(result):
 
 func _handle_victory():
 	print("Victory!")
+	if animation_manager:
+		animation_manager.show_victory_screen(self)
+		animation_manager.play_sound_effect("victory")
 	emit_signal("battle_ended", true)
 
 func _handle_defeat():
 	print("Defeat!")
+	if animation_manager:
+		animation_manager.show_defeat_screen(self)
+		animation_manager.play_sound_effect("defeat")
 	emit_signal("battle_ended", false)
 
 func _input(event):

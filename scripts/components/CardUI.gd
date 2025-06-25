@@ -117,10 +117,24 @@ func _get_play_area():
 
 func _on_mouse_entered():
 	if not is_dragging and can_play:
-		scale = Vector2(1.05, 1.05)
-		z_index = 10
+		var animation_manager = _get_animation_manager()
+		if animation_manager:
+			animation_manager.card_hover_effect(self, true)
+		else:
+			scale = Vector2(1.05, 1.05)
+			z_index = 10
 
 func _on_mouse_exited():
 	if not is_dragging:
-		scale = Vector2(1.0, 1.0)
-		z_index = 0
+		var animation_manager = _get_animation_manager()
+		if animation_manager:
+			animation_manager.card_hover_effect(self, false)
+		else:
+			scale = Vector2(1.0, 1.0)
+			z_index = 0
+
+func _get_animation_manager():
+	var battle_scene = get_tree().root.find_child("BattleScene", true, false)
+	if battle_scene and battle_scene.has_method("get_node"):
+		return battle_scene.animation_manager
+	return null
