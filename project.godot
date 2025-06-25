@@ -1,0 +1,49 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the properties are organized in sections here.
+
+[application]
+
+config/name="Cyberpunk Deckbuilder"
+config/description="A cyberpunk-themed deckbuilding card game for mobile web"
+run/main_scene="res://scenes/Main.tscn"
+config/features=PackedStringArray("4.3", "Mobile")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=360
+window/size/viewport_height=640
+window/size/window_width_override=720
+window/size/window_height_override=1280
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep_width"
+window/handheld/orientation="portrait"
+window/size/resizable=false
+window/energy_saving/keep_screen_on=true
+
+[rendering]
+
+renderer/rendering_method="mobile"
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.1, 0.1, 0.1, 1)
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[input]
+
+ui_touch={
+"deadzone": 0.5,
+"events": [Object(InputEventScreenTouch,"resource_local_to_scene":false,"resource_name":"","device":-1,"index":0,"position":Vector2(0, 0),"double_tap":false,"pressed":true)]
+}
+card_drag={
+"deadzone": 0.5,
+"events": [Object(InputEventScreenDrag,"resource_local_to_scene":false,"resource_name":"","device":-1,"index":0,"position":Vector2(0, 0),"relative":Vector2(0, 0),"speed":Vector2(0, 0))]
+}
+
+[web]
+
+export/icon="res://icon.svg"
+export/progressive_web_app/enabled=true
