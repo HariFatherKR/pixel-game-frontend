@@ -5,13 +5,22 @@ signal request_completed(response)
 signal request_failed(error)
 
 # API configuration
-var base_url: String = "http://localhost:8080/api"
+var base_url: String = "http://localhost:8080/api/v1"
+var health_url: String = "http://localhost:8080/health"
+var version_url: String = "http://localhost:8080/v1/version"
 var auth_token: String = ""
 
 func _ready():
 	print("APIClient initialized")
 
-# Auth endpoints
+# System endpoints
+func get_health():
+	_make_direct_request(health_url, HTTPClient.METHOD_GET)
+
+func get_version():
+	_make_direct_request(version_url, HTTPClient.METHOD_GET)
+
+# Auth endpoints (not yet implemented on server)
 func register(username: String, password: String):
 	var body = {"username": username, "password": password}
 	_make_request("/auth/register", HTTPClient.METHOD_POST, body)
@@ -24,8 +33,8 @@ func login(username: String, password: String):
 func get_cards():
 	_make_request("/cards", HTTPClient.METHOD_GET)
 
-func get_card(card_id: String):
-	_make_request("/cards/" + card_id, HTTPClient.METHOD_GET)
+func get_card(card_id: int):
+	_make_request("/cards/" + str(card_id), HTTPClient.METHOD_GET)
 
 # Deck endpoints
 func get_decks():
@@ -35,8 +44,13 @@ func create_deck(name: String, card_ids: Array):
 	var body = {"name": name, "cards": card_ids}
 	_make_request("/decks", HTTPClient.METHOD_POST, body)
 
-# Helper function to make HTTP requests
+# Helper function to make HTTP requests to base_url
 func _make_request(endpoint: String, method: int, body = null):
+	var url = base_url + endpoint
+	_make_direct_request(url, method, body)
+
+# Helper function to make direct HTTP requests
+func _make_direct_request(url: String, method: int, body = null):
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed.bind(http_request))
@@ -44,8 +58,6 @@ func _make_request(endpoint: String, method: int, body = null):
 	var headers = ["Content-Type: application/json"]
 	if auth_token != "":
 		headers.append("Authorization: Bearer " + auth_token)
-	
-	var url = base_url + endpoint
 	
 	if body != null:
 		var json_body = JSON.stringify(body)

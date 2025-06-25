@@ -1,6 +1,7 @@
 extends Control
 
 signal play_pressed()
+signal cards_pressed()
 signal settings_pressed()
 signal exit_pressed()
 
@@ -10,6 +11,10 @@ func _ready():
 func _on_play_button_pressed():
 	print("Play button pressed")
 	emit_signal("play_pressed")
+
+func _on_cards_button_pressed():
+	print("Cards button pressed")
+	emit_signal("cards_pressed")
 
 func _on_settings_button_pressed():
 	print("Settings button pressed")

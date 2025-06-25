@@ -63,6 +63,12 @@ custom_minimum_size = Vector2(200, 50)
 text = "PLAY"
 theme_override_styles/normal = SubResource("StyleBoxFlat_1")
 
+[node name="CardsButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 50)
+text = "CARDS"
+theme_override_styles/normal = SubResource("StyleBoxFlat_1")
+
 [node name="SettingsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(200, 50)
@@ -76,5 +82,6 @@ text = "EXIT"
 theme_override_styles/normal = SubResource("StyleBoxFlat_1")
 
 [connection signal="pressed" from="VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/CardsButton" to="." method="_on_cards_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]

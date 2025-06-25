@@ -5,6 +5,7 @@ var card_name: String = "Debug Card"
 var cost: int = 2
 var power: int = 5
 var description: String = "This is a test card"
+var card_type: String = "action"
 
 # Drag and drop variables
 var is_dragging: bool = false
@@ -27,7 +28,10 @@ func update_card_display():
 	if has_node("VBoxContainer/DescriptionLabel"):
 		$VBoxContainer/DescriptionLabel.text = description
 	if has_node("VBoxContainer/PowerLabel"):
-		$VBoxContainer/PowerLabel.text = "Power: " + str(power)
+		var power_text = "Type: " + card_type
+		if power > 0:
+			power_text += " | Power: " + str(power)
+		$VBoxContainer/PowerLabel.text = power_text
 
 func _on_gui_input(event):
 	if event is InputEventMouseButton:
