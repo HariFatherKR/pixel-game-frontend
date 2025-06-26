@@ -35,11 +35,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -100.0
-offset_right = 100.0
-offset_bottom = 100.0
-theme_override_constants/separation = 20
+offset_left = -120.0
+offset_top = -150.0
+offset_right = 120.0
+offset_bottom = 150.0
+theme_override_constants/separation = 24
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -59,36 +59,44 @@ horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 50)
+custom_minimum_size = Vector2(240, 56)
 text = "PLAY"
 theme_override_styles/normal = SubResource("StyleBoxFlat_1")
 
 [node name="CardsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 50)
+custom_minimum_size = Vector2(240, 56)
 text = "CARDS"
 theme_override_styles/normal = SubResource("StyleBoxFlat_1")
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 50)
+custom_minimum_size = Vector2(240, 56)
 text = "SETTINGS"
 theme_override_styles/normal = SubResource("StyleBoxFlat_1")
 
 [node name="LoginButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 50)
+custom_minimum_size = Vector2(240, 56)
 text = "LOGIN"
 theme_override_styles/normal = SubResource("StyleBoxFlat_1")
 
 [node name="ExitButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 50)
+custom_minimum_size = Vector2(240, 56)
 text = "EXIT"
 theme_override_styles/normal = SubResource("StyleBoxFlat_1")
+
+[node name="TestButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(240, 40)
+text = "🧪 MOBILE TEST"
+theme_override_styles/normal = SubResource("StyleBoxFlat_1")
+theme_override_font_sizes/font_size = 14
 
 [connection signal="pressed" from="VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/CardsButton" to="." method="_on_cards_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/LoginButton" to="." method="_on_login_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/TestButton" to="." method="_on_test_button_pressed"]

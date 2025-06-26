@@ -9,6 +9,10 @@ var drag_offset = Vector2.ZERO
 var original_position = Vector2.ZERO
 var original_parent = null
 var can_play = true
+var is_hovered = false
+var touch_feedback_tween: Tween
+var touch_start_pos = Vector2.ZERO
+var is_potential_drag = false
 
 @onready var name_label = $VBoxContainer/NameLabel
 @onready var cost_label = $VBoxContainer/CostLabel
@@ -19,6 +23,9 @@ func _ready():
 	gui_input.connect(_on_gui_input)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
+	
+	# Mobile optimization
+	TouchHelper.ensure_min_touch_size(self)
 
 func setup_card(data: Dictionary, energy: int = 999):
 	card_data = data
@@ -58,10 +65,33 @@ func setup_card(data: Dictionary, energy: int = 999):
 func _on_gui_input(event: InputEvent):
 	if not can_play:
 		return
+	
+	# Handle touch input (mobile)
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			touch_start_pos = event.position
+			is_potential_drag = true
+			_start_drag(event.position)
+		else:
+			if is_potential_drag and not is_dragging:
+				# This was a tap, not a drag
+				emit_signal("card_selected", card_data)
+			_end_drag()
+			is_potential_drag = false
+	
+	elif event is InputEventScreenDrag and is_potential_drag:
+		# Check if this should become a drag gesture
+		if not is_dragging and TouchHelper.is_drag_gesture(touch_start_pos, event.position):
+			is_dragging = true
 		
-	if event is InputEventMouseButton:
+		if is_dragging:
+			_update_drag(event.position + global_position)
+	
+	# Handle mouse input (desktop fallback)
+	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
+				touch_start_pos = event.position
 				_start_drag(event.position)
 			else:
 				_end_drag()
@@ -75,6 +105,9 @@ func _start_drag(local_pos: Vector2):
 	original_position = global_position
 	original_parent = get_parent()
 	
+	# Enhanced visual feedback for touch
+	_create_touch_feedback()
+	
 	# Move to top layer
 	var viewport = get_viewport()
 	if viewport:
@@ -82,9 +115,16 @@ func _start_drag(local_pos: Vector2):
 		viewport.add_child(self)
 		global_position = original_position
 	
-	# Visual feedback
-	scale = Vector2(1.1, 1.1)
+	# Enhanced visual feedback with smooth scaling
+	if touch_feedback_tween:
+		touch_feedback_tween.kill()
+	touch_feedback_tween = create_tween()
+	touch_feedback_tween.tween_property(self, "scale", Vector2(1.15, 1.15), 0.2)
+	touch_feedback_tween.parallel().tween_property(self, "modulate", Color(1.2, 1.2, 1.2, 1.0), 0.2)
 	z_index = 100
+	
+	# Add haptic feedback for mobile
+	TouchHelper.provide_haptic_feedback(50)
 
 func _update_drag(global_pos: Vector2):
 	if is_dragging:
@@ -95,8 +135,14 @@ func _end_drag():
 		return
 		
 	is_dragging = false
-	scale = Vector2(1.0, 1.0)
 	z_index = 0
+	
+	# Smooth return animation
+	if touch_feedback_tween:
+		touch_feedback_tween.kill()
+	touch_feedback_tween = create_tween()
+	touch_feedback_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
+	touch_feedback_tween.parallel().tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.2)
 	
 	# Check if dropped in valid area
 	var play_area = _get_play_area()
@@ -143,6 +189,29 @@ func _get_animation_manager():
 	if battle_scene and battle_scene.has_method("get_node"):
 		return battle_scene.animation_manager
 	return null
+
+func _on_mouse_entered():
+	if not is_dragging and can_play:
+		is_hovered = true
+		if touch_feedback_tween:
+			touch_feedback_tween.kill()
+		touch_feedback_tween = create_tween()
+		touch_feedback_tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.15)
+		touch_feedback_tween.parallel().tween_property(self, "modulate", Color(1.1, 1.1, 1.1, 1.0), 0.15)
+
+func _on_mouse_exited():
+	if not is_dragging and is_hovered:
+		is_hovered = false
+		if touch_feedback_tween:
+			touch_feedback_tween.kill()
+		touch_feedback_tween = create_tween()
+		touch_feedback_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.15)
+		touch_feedback_tween.parallel().tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.15)
+
+func _create_touch_feedback():
+	# Create visual feedback for touch interactions
+	# This could include particle effects, glow, etc.
+	pass
 
 func _generate_javascript_code(data: Dictionary) -> String:
 	# Generate JavaScript-like code based on card properties
