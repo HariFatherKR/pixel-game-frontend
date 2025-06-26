@@ -15,7 +15,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="CardUI" type="Panel"]
-custom_minimum_size = Vector2(120, 160)
+custom_minimum_size = Vector2(140, 180)
 theme_override_styles/panel = SubResource("StyleBoxFlat_1")
 script = ExtResource("1_card")
 
@@ -24,15 +24,15 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 5.0
-margin_top = 5.0
-margin_right = -5.0
-margin_bottom = -5.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
 
 [node name="NameLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 text = "Card Name"
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0, 1, 1, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -57,5 +57,5 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 3
 text = "Card description goes here"
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 autowrap_mode = 2
