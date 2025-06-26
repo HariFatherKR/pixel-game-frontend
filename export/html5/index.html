@@ -2,9 +2,21 @@
 <html lang="ko">
 <head>
     <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
     <title>Pixel Game - Cyberpunk Card Battle</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
         body {
             margin: 0;
             padding: 0;
@@ -15,16 +27,22 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height for mobile */
+            overflow-x: hidden;
+            /* Support for safe areas on devices with notches */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
+        
         .container {
             text-align: center;
             max-width: 800px;
             padding: 20px;
+            width: 100%;
         }
+        
         h1 {
-            font-size: 3em;
+            font-size: clamp(2em, 5vw, 3em); /* Responsive font size */
             text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
             animation: glow 2s ease-in-out infinite alternate;
             margin-bottom: 20px;
@@ -34,52 +52,123 @@
             to { text-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff; }
         }
         .game-demo {
-            width: 360px;
-            height: 640px;
+            width: min(360px, 90vw); /* Responsive width */
+            height: min(640px, 80vh); /* Responsive height */
+            max-width: 360px;
+            max-height: 640px;
             background: #0a0a0f;
             border: 2px solid #0ff;
             border-radius: 10px;
-            padding: 20px;
+            padding: clamp(10px, 3vw, 20px); /* Responsive padding */
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0 auto;
+            /* Ensure game demo is touch-friendly */
+            touch-action: manipulation;
         }
         .menu-container {
             margin-top: 50px;
         }
         .game-button {
             display: block;
-            width: 200px;
+            width: min(240px, 80vw); /* Responsive button width */
+            min-height: 56px; /* Minimum touch target size */
             padding: 15px;
             margin: 10px auto;
             background: rgba(0, 255, 255, 0.1);
             border: 2px solid #0ff;
             color: #0ff;
             font-family: 'Courier New', monospace;
-            font-size: 18px;
+            font-size: clamp(16px, 4vw, 18px); /* Responsive font size */
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
+            /* Enhanced touch optimization */
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(0, 255, 255, 0.3);
         }
-        .game-button:hover {
+        .game-button:hover, .game-button:focus {
             background: rgba(0, 255, 255, 0.3);
             transform: scale(1.05);
             box-shadow: 0 0 10px #0ff;
+            outline: none;
         }
+        
+        .game-button:active {
+            transform: scale(0.95);
+            background: rgba(0, 255, 255, 0.5);
+        }
+        
         .subtitle {
             color: #f0f;
-            font-size: 1.2em;
+            font-size: clamp(1em, 3vw, 1.2em); /* Responsive subtitle */
             margin: 10px 0;
         }
+        
         .info {
             margin: 20px 0;
-            padding: 20px;
+            padding: clamp(15px, 4vw, 20px); /* Responsive padding */
             background: rgba(0, 255, 255, 0.1);
             border: 1px solid #0ff;
             border-radius: 5px;
-            font-size: 0.9em;
+            font-size: clamp(0.8em, 2.5vw, 0.9em); /* Responsive font size */
+        }
+        
+        /* Media queries for different screen sizes */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .game-demo {
+                width: 95vw;
+                height: 85vh;
+                padding: 15px;
+            }
+            
+            .menu-container {
+                margin-top: 30px;
+            }
+            
+            .game-button {
+                min-height: 60px; /* Larger touch targets on small screens */
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .game-demo {
+                height: 90vh;
+            }
+            
+            .menu-container {
+                margin-top: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+                margin-bottom: 10px;
+            }
+        }
+        
+        /* Landscape orientation adjustments */
+        @media (orientation: landscape) and (max-height: 500px) {
+            body {
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+            }
+            
+            .game-demo {
+                width: 45vw;
+                height: 80vh;
+            }
+            
+            .container {
+                width: 45vw;
+            }
         }
         .status {
             color: #0f0;

@@ -7,13 +7,34 @@ const CardDetailScene = preload("res://scenes/screens/CardDetail.tscn")
 const LoginScreenScene = preload("res://scenes/screens/LoginScreen.tscn")
 const DeckBuilderScene = preload("res://scenes/screens/DeckBuilder.tscn")
 const BattleScene = preload("res://scenes/screens/BattleScene.tscn")
+const MobileTestScene = preload("res://scenes/screens/MobileTestScene.tscn")
 
 # Current scene management
 var current_scene: Node
 
 func _ready():
 	print("Cyberpunk Deckbuilder initialized")
+	_setup_responsive_manager()
 	_setup_initial_scene()
+
+func _setup_responsive_manager():
+	# Add ResponsiveManager as a child for responsive design handling
+	var responsive_manager = preload("res://scripts/utils/ResponsiveManager.gd").new()
+	add_child(responsive_manager)
+	
+	# Connect to screen size changes
+	responsive_manager.screen_size_changed.connect(_on_screen_size_changed)
+	responsive_manager.orientation_changed.connect(_on_orientation_changed)
+
+func _on_screen_size_changed(new_size: Vector2):
+	print("Screen size changed to: ", new_size)
+	# Refresh current scene layout if needed
+	if current_scene and current_scene.has_method("adapt_to_screen_size"):
+		current_scene.adapt_to_screen_size(new_size)
+
+func _on_orientation_changed(is_portrait: bool):
+	print("Orientation changed to: ", "Portrait" if is_portrait else "Landscape")
+	# Handle orientation changes if needed
 
 func _setup_initial_scene():
 	_load_main_menu()
@@ -36,6 +57,8 @@ func _load_main_menu():
 		current_scene.login_pressed.connect(_on_login_pressed)
 	if current_scene.has_signal("exit_pressed"):
 		current_scene.exit_pressed.connect(_on_exit_pressed)
+	if current_scene.has_signal("test_pressed"):
+		current_scene.test_pressed.connect(_on_test_pressed)
 	
 	print("Main menu loaded")
 
@@ -176,3 +199,24 @@ func _on_battle_return_to_menu():
 func _on_start_battle_requested(deck_id: int):
 	print("Battle requested with deck_id: ", deck_id)
 	_load_battle_scene(-1, deck_id)
+
+func _on_test_pressed():
+	print("Opening mobile test scene...")
+	_load_mobile_test_scene()
+
+func _load_mobile_test_scene():
+	if current_scene:
+		current_scene.queue_free()
+	
+	current_scene = MobileTestScene.instantiate()
+	$UI.add_child(current_scene)
+	
+	# Connect back signal if available
+	if current_scene.has_signal("back_pressed"):
+		current_scene.back_pressed.connect(_on_mobile_test_back_pressed)
+	
+	print("Mobile test scene loaded")
+
+func _on_mobile_test_back_pressed():
+	print("Returning to main menu from mobile test...")
+	_load_main_menu()
